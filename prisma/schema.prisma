@@ -1,0 +1,167 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("ADMIN")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Product {
+  id              String      @id @default(cuid())
+  slug            String      @unique
+  name            String
+  arabicName      String?
+  price           Int
+  costPrice       Float       @default(0)
+  oldPrice        Int?
+  description     String
+  longDescription String
+  category        String
+  tags            String
+  notes           String      @default("[]")
+  topNotes        String
+  heartNotes      String
+  baseNotes       String
+  longevity       String
+  projection      String
+  occasion        String
+  gender          String
+  sizes           String      @default("[{\"label\":\"50ml\",\"priceModifier\":0},{\"label\":\"100ml\",\"priceModifier\":500}]")
+  image           String
+  gallery         String
+  video           String?
+  metaTitle       String?
+  metaDescription String?
+  rating          Float       @default(0)
+  reviewCount     Int         @default(0)
+  isBestSeller    Boolean     @default(false)
+  isNew           Boolean     @default(false)
+  stock           Int         @default(100)
+  isActive        Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  orderItems      OrderItem[]
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique
+  customerName    String
+  customerPhone   String
+  customerEmail   String?
+  city            String
+  address         String
+  notes           String?
+  paymentMethod   String
+  subtotal        Int
+  shipping        Int
+  total           Int
+  status          String      @default("PENDING")
+  whatsappMessage String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  items           OrderItem[]
+
+  @@index([createdAt])
+  @@index([status])
+  @@index([paymentMethod])
+}
+
+model OrderItem {
+  id           String   @id @default(cuid())
+  orderId      String
+  productId    String?
+  productName  String
+  productSlug  String
+  productImage String?
+  size         String
+  price        Int
+  unitCost     Float    @default(0)
+  unitPrice    Float    @default(0)
+  profit       Float    @default(0)
+  quantity     Int
+  total        Int
+  createdAt    DateTime @default(now())
+  order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product      Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model AnalyticsVisitor {
+  id          String             @id @default(cuid())
+  visitorId   String             @unique
+  firstSeenAt DateTime           @default(now())
+  lastSeenAt  DateTime           @default(now())
+  userAgent   String?
+  country     String?
+  city        String?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  sessions    AnalyticsSession[]
+  events      AnalyticsEvent[]
+
+  @@index([firstSeenAt])
+  @@index([lastSeenAt])
+  @@index([createdAt])
+}
+
+model AnalyticsSession {
+  id              String           @id @default(cuid())
+  sessionId       String           @unique
+  visitorId       String
+  startedAt       DateTime         @default(now())
+  endedAt         DateTime?
+  lastSeenAt      DateTime         @default(now())
+  durationSeconds Int              @default(0)
+  pageViews       Int              @default(0)
+  productViews    Int              @default(0)
+  engagementScore Int              @default(0)
+  referrer        String?
+  landingPage     String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  visitor         AnalyticsVisitor @relation(fields: [visitorId], references: [visitorId], onDelete: Cascade)
+  events          AnalyticsEvent[]
+
+  @@index([visitorId])
+  @@index([startedAt])
+  @@index([lastSeenAt])
+  @@index([engagementScore])
+}
+
+model AnalyticsEvent {
+  id          String           @id @default(cuid())
+  visitorId   String
+  sessionId   String
+  type        String
+  path        String
+  productSlug String?
+  productName String?
+  metadata    Json?
+  createdAt   DateTime         @default(now())
+  visitor     AnalyticsVisitor @relation(fields: [visitorId], references: [visitorId], onDelete: Cascade)
+  session     AnalyticsSession @relation(fields: [sessionId], references: [sessionId], onDelete: Cascade)
+
+  @@index([visitorId])
+  @@index([sessionId])
+  @@index([type])
+  @@index([path])
+  @@index([productSlug])
+  @@index([createdAt])
+  @@index([type, createdAt])
+  @@index([visitorId, type, createdAt])
+  @@index([sessionId, type, createdAt])
+}

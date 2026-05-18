@@ -1,0 +1,9 @@
+export const shippingFee = 85;
+
+export function formatPrice(price: number) {
+  return new Intl.NumberFormat("en-EG", {
+    style: "currency",
+    currency: "EGP",
+    maximumFractionDigits: 0
+  }).format(price);
+}
