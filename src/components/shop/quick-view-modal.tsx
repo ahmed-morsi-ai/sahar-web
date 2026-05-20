@@ -10,41 +10,44 @@ import { LuxuryButton } from "@/components/ui/luxury-button";
 import { MediaRenderer } from "@/components/product/media-renderer";
 import { resolveProductImage } from "@/lib/media-utils";
 import { useAnalytics } from "@/components/analytics/AnalyticsTracker";
+import { usePrefersReducedMotion } from "@/lib/use-media-query";
 
 export function QuickViewModal({ product, onClose }: { product: Product | null; onClose: () => void }) {
   const { addItem } = useCart();
   const { track } = useAnalytics();
   const imageSrc = resolveProductImage(product?.imageUrl || product?.image);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   return (
     <AnimatePresence>
       {product ? (
         <motion.div
-          className="fixed inset-0 z-[70] grid place-items-center bg-black/70 p-4 backdrop-blur-xl"
-          initial={{ opacity: 0 }}
+          className="fixed inset-0 z-[70] grid place-items-center bg-black/70 p-3 backdrop-blur-lg sm:p-4 sm:backdrop-blur-xl"
+          initial={prefersReducedMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          transition={{ duration: prefersReducedMotion ? 0.01 : 0.2 }}
           onClick={onClose}
         >
           <motion.div
-            initial={{ scale: 0.96, y: 20 }}
+            initial={prefersReducedMotion ? false : { scale: 0.98, y: 14 }}
             animate={{ scale: 1, y: 0 }}
-            exit={{ scale: 0.96, y: 20 }}
+            exit={prefersReducedMotion ? { opacity: 0 } : { scale: 0.98, y: 14 }}
             onClick={(event) => event.stopPropagation()}
-            className="grid max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-[1.6rem] border border-gold/20 bg-night p-5 shadow-2xl md:grid-cols-2"
+            className="grid max-h-[92dvh] w-full max-w-4xl overflow-y-auto rounded-[1.25rem] border border-gold/20 bg-night p-3 shadow-2xl sm:rounded-[1.6rem] sm:p-5 md:grid-cols-2"
           >
-            <div className="relative aspect-square overflow-hidden rounded-[1.2rem] bg-luxury-radial">
+            <div className="relative aspect-square max-h-[300px] overflow-hidden rounded-[1rem] bg-luxury-radial sm:max-h-none sm:rounded-[1.2rem]">
               <MediaRenderer
                 src={imageSrc}
                 alt={product.name}
                 fallbackLabel={product.name}
                 className="h-full w-full"
                 mediaClassName="h-full w-full object-cover"
-                imageClassName="object-contain p-10"
+                imageClassName="object-contain p-7 sm:p-10"
                 preload="metadata"
               />
             </div>
-            <div className="p-5">
+            <div className="p-2 pt-4 sm:p-5">
               <button
                 type="button"
                 aria-label="Close quick view"
@@ -53,13 +56,14 @@ export function QuickViewModal({ product, onClose }: { product: Product | null; 
               >
                 <X className="h-4 w-4" />
               </button>
-              <p className="text-xs uppercase tracking-[0.28em] text-gold">Quick View</p>
-              <h3 className="mt-3 font-serif text-4xl text-ivory">{product.name}</h3>
+              <p className="text-xs uppercase tracking-[0.22em] text-gold sm:tracking-[0.28em]">Quick View</p>
+              <h3 className="mt-3 font-serif text-3xl leading-tight text-ivory sm:text-4xl">{product.name}</h3>
               <p className="mt-3 text-2xl font-semibold text-gold">{formatPrice(product.price)}</p>
-              <p className="mt-5 leading-7 text-ivory/65">{product.longDescription}</p>
-              <p className="mt-5 text-sm uppercase tracking-[0.22em] text-emerald/80">{product.notes.join(" / ")}</p>
-              <div className="mt-8 flex flex-wrap gap-3">
+              <p className="mt-4 text-sm leading-relaxed text-ivory/65 sm:mt-5 sm:text-base sm:leading-7">{product.longDescription}</p>
+              <p className="mt-5 text-xs uppercase tracking-[0.16em] text-emerald/80 sm:text-sm sm:tracking-[0.22em]">{product.notes.join(" / ")}</p>
+              <div className="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:flex-wrap">
                 <LuxuryButton
+                  className="w-full sm:w-auto"
                   onClick={() => {
                     track({
                       type: "add_to_cart",
@@ -75,6 +79,7 @@ export function QuickViewModal({ product, onClose }: { product: Product | null; 
                 <LuxuryButton
                   href={`/product/${product.slug}`}
                   variant="secondary"
+                  className="w-full sm:w-auto"
                   onClick={() =>
                     track({
                       type: "view_details",

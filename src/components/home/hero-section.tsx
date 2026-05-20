@@ -5,6 +5,7 @@ import { ArrowRight, Sparkles } from "lucide-react";
 import { LuxuryButton } from "@/components/ui/luxury-button";
 import { resolveProductImage } from "@/lib/media-utils";
 import { useAnalytics } from "@/components/analytics/AnalyticsTracker";
+import { useMediaQuery, usePrefersReducedMotion } from "@/lib/use-media-query";
 import type { Product } from "@/types/product";
 
 const heroVideo = "/videos/sahar-hero.mp4";
@@ -16,6 +17,9 @@ const fallbackFeaturedProduct = {
 
 export function HeroSection({ featured }: { featured?: Product }) {
   const { track } = useAnalytics();
+  const isMobile = useMediaQuery("(max-width: 640px)");
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const reduceHeroMotion = isMobile || prefersReducedMotion;
   const featuredProduct = featured
     ? {
         name: featured.name,
@@ -24,30 +28,31 @@ export function HeroSection({ featured }: { featured?: Product }) {
     : fallbackFeaturedProduct;
 
   return (
-    <section className="relative min-h-screen overflow-hidden pt-28">
+    <section className="relative min-h-[100svh] overflow-hidden pt-20 sm:pt-24 lg:min-h-screen lg:pt-28">
       <div className="absolute inset-0 -z-10 bg-luxury-radial" />
       <div className="absolute inset-x-0 bottom-0 -z-10 h-48 bg-gradient-to-t from-night to-transparent" />
-      <div className="luxury-container grid min-h-[calc(100vh-7rem)] items-center gap-12 py-16 lg:grid-cols-[1fr_.9fr]">
+      <div className="luxury-container grid min-h-[calc(100svh-5rem)] items-center gap-8 py-8 sm:gap-10 sm:py-12 lg:min-h-[calc(100vh-7rem)] lg:grid-cols-[1fr_.9fr] lg:gap-12 lg:py-16">
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={prefersReducedMotion ? false : { opacity: 0, y: reduceHeroMotion ? 12 : 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: reduceHeroMotion ? 0.45 : 1, ease: [0.22, 1, 0.36, 1] }}
         >
-          <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-gold/20 bg-white/[0.04] px-4 py-2 text-xs uppercase tracking-[0.28em] text-gold backdrop-blur-xl">
+          <p className="mb-4 inline-flex max-w-full items-center gap-2 rounded-full border border-gold/20 bg-white/[0.04] px-3 py-2 text-[10px] uppercase tracking-[0.18em] text-gold backdrop-blur-xl sm:mb-5 sm:px-4 sm:text-xs sm:tracking-[0.28em]">
             <Sparkles className="h-3.5 w-3.5" /> Limited Evening Release
           </p>
-          <h1 className="font-serif text-7xl font-semibold leading-[0.82] text-ivory sm:text-8xl lg:text-[9.5rem]">
+          <h1 className="font-serif text-5xl font-semibold leading-[0.88] text-ivory sm:text-8xl sm:leading-[0.82] lg:text-[9.5rem]">
             SAHAR
-            <span className="mt-5 block text-4xl font-medium leading-none text-gold sm:text-5xl lg:text-6xl">
+            <span className="mt-3 block text-3xl font-medium leading-none text-gold sm:mt-5 sm:text-5xl lg:text-6xl">
               Essence of Night
             </span>
           </h1>
-          <p className="mt-8 max-w-2xl text-lg leading-8 text-ivory/68 sm:text-xl">
+          <p className="mt-5 max-w-2xl text-base leading-relaxed text-ivory/68 sm:mt-8 sm:text-xl sm:leading-8">
             A cinematic fragrance experience crafted for evenings that feel expensive, mysterious, and unforgettable.
           </p>
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-7 flex flex-col gap-3 sm:mt-9 sm:flex-row">
             <LuxuryButton
               href="/shop"
+              className="w-full sm:w-auto"
               onClick={() => track({ type: "shop_now_click", metadata: { source: "hero_shop_collection" } })}
             >
               Shop Collection <ArrowRight className="h-4 w-4" />
@@ -55,37 +60,43 @@ export function HeroSection({ featured }: { featured?: Product }) {
             <LuxuryButton
               href="/story"
               variant="secondary"
+              className="w-full sm:w-auto"
               onClick={() => track({ type: "story_click", metadata: { source: "hero_discover_story" } })}
             >
               Discover The Story
             </LuxuryButton>
           </div>
-          <div className="mt-12 grid max-w-2xl grid-cols-3 gap-3">
+          <div className="mt-8 grid max-w-2xl grid-cols-2 gap-3 sm:mt-12 sm:grid-cols-3">
             {[
               ["18h", "Long Lasting"],
               ["3", "Luxury Layers"],
               ["01", "Signature Bottle"]
-            ].map(([value, label]) => (
-              <div key={label} className="rounded-2xl border border-gold/12 bg-white/[0.035] p-4 backdrop-blur-xl">
-                <p className="font-serif text-3xl text-gold">{value}</p>
-                <p className="mt-1 text-xs uppercase tracking-[0.18em] text-ivory/45">{label}</p>
+            ].map(([value, label], index) => (
+              <div
+                key={label}
+                className={`rounded-2xl border border-gold/12 bg-white/[0.035] p-3 backdrop-blur-xl sm:p-4 ${
+                  index === 2 ? "col-span-2 sm:col-span-1" : ""
+                }`}
+              >
+                <p className="font-serif text-2xl text-gold sm:text-3xl">{value}</p>
+                <p className="mt-1 text-[10px] uppercase tracking-[0.14em] text-ivory/45 sm:text-xs sm:tracking-[0.18em]">{label}</p>
               </div>
             ))}
           </div>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.94 }}
+          initial={prefersReducedMotion ? false : { opacity: 0, scale: reduceHeroMotion ? 0.98 : 0.94 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-          className="relative mx-auto w-full max-w-lg"
+          transition={{ duration: reduceHeroMotion ? 0.45 : 1.1, delay: reduceHeroMotion ? 0.05 : 0.15, ease: [0.22, 1, 0.36, 1] }}
+          className="relative mx-auto w-full max-w-md sm:max-w-lg"
         >
-          <div className="animated-border relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-night p-px shadow-glow">
-            <div className="relative h-full overflow-hidden rounded-[1.95rem] bg-luxury-radial">
-              <div className="absolute inset-x-10 top-12 h-72 rounded-full bg-emerald/20 blur-3xl" />
+          <div className="animated-border relative h-[340px] overflow-hidden rounded-[1.4rem] bg-night p-px shadow-gold sm:aspect-[4/5] sm:h-auto sm:rounded-[2rem] sm:shadow-glow">
+            <div className="relative h-full overflow-hidden rounded-[1.35rem] bg-luxury-radial sm:rounded-[1.95rem]">
+              <div className="absolute inset-x-10 top-12 hidden h-72 rounded-full bg-emerald/20 blur-3xl sm:block" />
               <video
                 className="relative h-full w-full object-cover"
-                autoPlay
+                autoPlay={!prefersReducedMotion}
                 muted
                 playsInline
                 preload="auto"
@@ -97,9 +108,9 @@ export function HeroSection({ featured }: { featured?: Product }) {
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
             </div>
           </div>
-          <div className="absolute -bottom-5 left-5 right-5 rounded-2xl border border-gold/20 bg-night/70 p-4 shadow-2xl backdrop-blur-2xl">
-            <p className="text-xs uppercase tracking-[0.25em] text-gold/75">Featured Scent</p>
-            <p className="mt-1 font-serif text-3xl text-ivory">{featuredProduct.name}</p>
+          <div className="absolute -bottom-4 left-4 right-4 rounded-2xl border border-gold/20 bg-night/75 p-3 shadow-xl backdrop-blur-xl sm:-bottom-5 sm:left-5 sm:right-5 sm:p-4 sm:shadow-2xl sm:backdrop-blur-2xl">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-gold/75 sm:text-xs sm:tracking-[0.25em]">Featured Scent</p>
+            <p className="mt-1 font-serif text-2xl text-ivory sm:text-3xl">{featuredProduct.name}</p>
           </div>
         </motion.div>
       </div>

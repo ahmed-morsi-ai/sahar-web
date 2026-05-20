@@ -22,7 +22,7 @@ export function ProductFilters({
   onSort: (value: string) => void;
 }) {
   return (
-    <div className="mb-10 rounded-[1.5rem] border border-gold/15 bg-white/[0.04] p-4 backdrop-blur-2xl">
+    <div className="mb-8 rounded-[1.25rem] border border-gold/15 bg-white/[0.04] p-3 backdrop-blur-xl sm:mb-10 sm:rounded-[1.5rem] sm:p-4 sm:backdrop-blur-2xl">
       <div className="grid gap-4 lg:grid-cols-[1fr_auto]">
         <label className="relative block">
           <span className="sr-only">Search products</span>
@@ -39,7 +39,7 @@ export function ProductFilters({
           <select
             value={sort}
             onChange={(event) => onSort(event.target.value)}
-            className="h-12 rounded-full border border-gold/15 bg-night/80 px-5 text-sm text-ivory focus:border-gold/50 focus:ring-gold/20"
+            className="h-12 w-full rounded-full border border-gold/15 bg-night/80 px-5 text-sm text-ivory focus:border-gold/50 focus:ring-gold/20 lg:w-auto"
           >
             <option>Featured</option>
             <option>Price Low to High</option>
@@ -54,7 +54,7 @@ export function ProductFilters({
             key={item}
             type="button"
             onClick={() => onCategory(item)}
-            className={`shrink-0 rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition ${
+            className={`shrink-0 rounded-full border px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] transition sm:px-4 sm:text-xs sm:tracking-[0.16em] ${
               category === item
                 ? "border-gold bg-gold text-night"
                 : "border-gold/15 text-ivory/60 hover:border-gold/45 hover:text-gold"

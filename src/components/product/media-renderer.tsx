@@ -1,13 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   PRODUCT_IMAGE_PLACEHOLDER,
   isRenderableImagePath,
   isVideoPath,
   resolveProductImage
 } from "@/lib/media-utils";
+import { useInViewport } from "@/lib/use-in-viewport";
+import { useMediaQuery, usePrefersReducedMotion } from "@/lib/use-media-query";
 
 type MediaRendererProps = {
   src?: string | null;
@@ -20,6 +22,12 @@ type MediaRendererProps = {
   sizes?: string;
   priority?: boolean;
   preload?: "none" | "metadata" | "auto";
+  autoPlay?: boolean;
+  loop?: boolean;
+  lazyVideo?: boolean;
+  allowMobileAutoPlay?: boolean;
+  disableVideoOnMobile?: boolean;
+  controlsOnMobile?: boolean;
 };
 
 function ProductMediaFallback({
@@ -52,13 +60,23 @@ export function MediaRenderer({
   imageClassName = "object-contain p-8",
   sizes,
   priority = false,
-  preload = "metadata"
+  preload = "metadata",
+  autoPlay = true,
+  loop = true,
+  lazyVideo = true,
+  allowMobileAutoPlay = false,
+  disableVideoOnMobile = false,
+  controlsOnMobile = false
 }: MediaRendererProps) {
   const normalizedSrc = src?.trim() ?? "";
   const normalizedFallbackSrc = fallbackSrc?.trim() ?? "";
   const wrapperClassName = `${/\b(relative|absolute|fixed|sticky)\b/.test(className) ? "" : "relative"} overflow-hidden ${className}`;
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
   const [activeSrc, setActiveSrc] = useState(normalizedSrc);
   const [failed, setFailed] = useState(false);
+  const isMobile = useMediaQuery("(max-width: 640px)");
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const isInView = useInViewport(wrapperRef, "260px", 0.05);
 
   useEffect(() => {
     setActiveSrc(normalizedSrc);
@@ -93,21 +111,49 @@ export function MediaRenderer({
   }
 
   if (isVideoPath(activeSrc)) {
+    const fallbackImage = resolveProductImage(normalizedFallbackSrc);
+    const shouldUseFallbackImage = (disableVideoOnMobile && isMobile) || prefersReducedMotion;
+    const shouldRenderVideo = !lazyVideo || isInView;
+    const shouldAutoPlay =
+      shouldRenderVideo &&
+      autoPlay &&
+      !prefersReducedMotion &&
+      (!isMobile || allowMobileAutoPlay);
+
+    if (shouldUseFallbackImage || !shouldRenderVideo) {
+      return (
+        <div ref={wrapperRef} className={wrapperClassName}>
+          <Image
+            src={fallbackImage}
+            alt={alt}
+            fill
+            priority={priority}
+            sizes={sizes}
+            className={imageClassName}
+            onError={handleMediaError}
+          />
+        </div>
+      );
+    }
+
     return (
-      <div className={wrapperClassName}>
+      <div ref={wrapperRef} className={wrapperClassName}>
         <video
           src={activeSrc}
           className={`${mediaClassName} rounded-[inherit]`}
-          autoPlay
+          autoPlay={shouldAutoPlay}
           muted
-          loop
+          loop={loop}
           playsInline
-          controls={false}
-          preload={preload}
+          controls={controlsOnMobile && isMobile}
+          preload={shouldAutoPlay ? preload : "metadata"}
           onError={handleMediaError}
           onEnded={(event) => {
+            if (!loop) return;
             event.currentTarget.currentTime = 0;
-            void event.currentTarget.play();
+            if (shouldAutoPlay) {
+              void event.currentTarget.play();
+            }
           }}
         />
       </div>
@@ -118,7 +164,7 @@ export function MediaRenderer({
     const fallbackImage = resolveProductImage(normalizedFallbackSrc);
 
     return (
-      <div className={wrapperClassName}>
+      <div ref={wrapperRef} className={wrapperClassName}>
         <Image
           src={fallbackImage}
           alt={alt}
@@ -133,7 +179,7 @@ export function MediaRenderer({
   }
 
   return (
-    <div className={wrapperClassName}>
+    <div ref={wrapperRef} className={wrapperClassName}>
       <Image
         src={activeSrc}
         alt={alt}

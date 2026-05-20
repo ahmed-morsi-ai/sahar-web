@@ -14,17 +14,17 @@ export function CartLineItem({ item }: { item: CartItem }) {
   const productImage = resolveProductImage(item.product.image);
 
   return (
-    <div className="grid grid-cols-[86px_1fr] gap-4 rounded-2xl border border-gold/12 bg-white/[0.035] p-3">
+    <div className="grid grid-cols-[72px_1fr] gap-3 rounded-xl border border-gold/12 bg-white/[0.035] p-3 sm:grid-cols-[86px_1fr] sm:gap-4 sm:rounded-2xl">
       <Link href={`/product/${item.product.slug}`} className="relative aspect-square overflow-hidden rounded-xl bg-luxury-radial">
-        <Image src={productImage} alt={item.product.name} fill className="object-contain p-3" />
+        <Image src={productImage} alt={item.product.name} fill sizes="(min-width: 640px) 86px, 72px" className="object-contain p-2 sm:p-3" />
       </Link>
       <div>
         <div className="flex items-start justify-between gap-3">
           <div>
-            <Link href={`/product/${item.product.slug}`} className="font-serif text-xl text-ivory hover:text-gold">
+            <Link href={`/product/${item.product.slug}`} className="font-serif text-lg leading-tight text-ivory hover:text-gold sm:text-xl">
               {item.product.name}
             </Link>
-            <p className="text-xs uppercase tracking-[0.2em] text-ivory/40">{item.size}</p>
+            <p className="text-[11px] uppercase tracking-[0.16em] text-ivory/40 sm:text-xs sm:tracking-[0.2em]">{item.size}</p>
           </div>
           <button
             type="button"
@@ -35,7 +35,7 @@ export function CartLineItem({ item }: { item: CartItem }) {
             <Trash2 className="h-4 w-4" />
           </button>
         </div>
-        <div className="mt-4 flex items-center justify-between">
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center rounded-full border border-gold/15">
             <button
               type="button"

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useMediaQuery, usePrefersReducedMotion } from "@/lib/use-media-query";
 
 type LuxuryButtonProps = {
   children: React.ReactNode;
@@ -23,6 +24,9 @@ export function LuxuryButton({
   className,
   disabled
 }: LuxuryButtonProps) {
+  const isMobile = useMediaQuery("(max-width: 640px)");
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const interactionMotion = isMobile || prefersReducedMotion ? undefined : { y: -2, scale: 1.015 };
   const classes = cn(
     "group inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 text-sm font-semibold uppercase tracking-[0.18em] transition focus:outline-none focus:ring-2 focus:ring-gold/50 disabled:cursor-not-allowed disabled:opacity-50",
     variant === "primary" &&
@@ -34,7 +38,7 @@ export function LuxuryButton({
   );
 
   const content = (
-    <motion.span whileHover={{ y: -2, scale: 1.015 }} whileTap={{ scale: 0.98 }} className={classes}>
+    <motion.span whileHover={interactionMotion} whileTap={prefersReducedMotion ? undefined : { scale: 0.98 }} className={classes}>
       {children}
     </motion.span>
   );

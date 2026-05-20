@@ -8,7 +8,7 @@ export default async function ShopPage() {
   const products = await getStoreProducts();
 
   return (
-    <section id="collection" className="min-h-screen pt-32 pb-24">
+    <section id="collection" className="min-h-screen pt-24 pb-14 sm:pt-32 sm:pb-24">
       <div className="luxury-container">
         <SectionHeader
           eyebrow="Shop Sahar"

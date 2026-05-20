@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useMediaQuery, usePrefersReducedMotion } from "@/lib/use-media-query";
 
 export function Reveal({
   children,
@@ -11,13 +12,17 @@ export function Reveal({
   delay?: number;
   className?: string;
 }) {
+  const isMobile = useMediaQuery("(max-width: 640px)");
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const shouldReduce = isMobile || prefersReducedMotion;
+
   return (
     <motion.div
       className={className}
-      initial={{ opacity: 0, y: 34, filter: "blur(8px)" }}
+      initial={prefersReducedMotion ? false : { opacity: 0, y: shouldReduce ? 12 : 34, filter: shouldReduce ? "blur(0px)" : "blur(8px)" }}
       whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: shouldReduce ? 0.35 : 0.8, delay: shouldReduce ? Math.min(delay, 0.05) : delay, ease: [0.22, 1, 0.36, 1] }}
     >
       {children}
     </motion.div>

@@ -13,15 +13,15 @@ export default async function OrderSuccessPage({
   const hasOrderNumber = Boolean(orderNumber);
 
   return (
-    <section className="min-h-screen px-5 py-32">
-      <div className="mx-auto max-w-2xl rounded-[1.5rem] border border-gold/15 bg-white/[0.045] p-8 text-center shadow-glow backdrop-blur-2xl">
-        <div className="mx-auto grid h-16 w-16 place-items-center rounded-full border border-emerald/35 bg-emerald/10 text-emerald">
-          <CheckCircle2 className="h-8 w-8" />
+    <section className="min-h-screen px-4 py-24 sm:px-5 sm:py-32">
+      <div className="mx-auto max-w-2xl rounded-[1.25rem] border border-gold/15 bg-white/[0.045] p-6 text-center shadow-gold backdrop-blur-xl sm:rounded-[1.5rem] sm:p-8 sm:shadow-glow sm:backdrop-blur-2xl">
+        <div className="mx-auto grid h-14 w-14 place-items-center rounded-full border border-emerald/35 bg-emerald/10 text-emerald sm:h-16 sm:w-16">
+          <CheckCircle2 className="h-7 w-7 sm:h-8 sm:w-8" />
         </div>
-        <p className="mt-6 text-xs uppercase tracking-[0.34em] text-gold/70">Order Received</p>
-        <h1 className="mt-3 font-serif text-5xl text-ivory">Your order has been received</h1>
+        <p className="mt-6 text-xs uppercase tracking-[0.24em] text-gold/70 sm:tracking-[0.34em]">Order Received</p>
+        <h1 className="mt-3 font-serif text-4xl leading-none text-ivory sm:text-5xl">Your order has been received</h1>
         {hasOrderNumber ? (
-          <p className="mt-5 text-lg text-ivory/65">
+          <p className="mt-5 text-base text-ivory/65 sm:text-lg">
             Order Number: <span className="text-gold">{orderNumber}</span>
           </p>
         ) : (
@@ -29,7 +29,7 @@ export default async function OrderSuccessPage({
             Your order was received, but the order number was not included in this link.
           </p>
         )}
-        <p className="mx-auto mt-4 max-w-xl leading-7 text-ivory/55">
+        <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-ivory/55 sm:text-base sm:leading-7">
           We saved your order and prepared the WhatsApp message so Sahar can confirm the details with you.
         </p>
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">

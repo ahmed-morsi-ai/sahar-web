@@ -9,6 +9,7 @@ import { usePathname } from "next/navigation";
 import { useCart } from "@/lib/cart";
 import { LuxuryButton } from "@/components/ui/luxury-button";
 import { brandLogo } from "@/lib/media";
+import { usePrefersReducedMotion } from "@/lib/use-media-query";
 
 const links = [
   { href: "/", label: "Home" },
@@ -24,17 +25,18 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
   const [logoFailed, setLogoFailed] = useState(false);
   const { itemCount, openDrawer } = useCart();
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   if (pathname.startsWith("/admin")) return null;
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-gold/10 bg-night/70 backdrop-blur-2xl">
-      <nav className="luxury-container flex h-20 items-center justify-between gap-2">
-        <Link href="/" className="flex min-w-0 items-center gap-3 sm:gap-3.5" aria-label="Sahar home">
-          <span className="relative grid h-[46px] w-[46px] shrink-0 place-items-center overflow-hidden rounded-full border border-gold/30 bg-[#06150f]/80 shadow-[0_0_28px_rgba(47,196,141,0.2)] sm:h-16 sm:w-16">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-gold/10 bg-night/80 backdrop-blur-xl sm:bg-night/70 sm:backdrop-blur-2xl">
+      <nav className="luxury-container flex h-16 items-center justify-between gap-2 sm:h-20">
+        <Link href="/" className="flex min-w-0 items-center gap-2.5 sm:gap-3.5" aria-label="Sahar home">
+          <span className="relative grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-full border border-gold/30 bg-[#06150f]/80 shadow-[0_0_18px_rgba(47,196,141,0.18)] sm:h-16 sm:w-16 sm:shadow-[0_0_28px_rgba(47,196,141,0.2)]">
             <span className="pointer-events-none absolute inset-1 rounded-full bg-emerald/12 blur-md" />
             {logoFailed ? (
-              <span className="relative font-serif text-2xl text-gold sm:text-4xl">س</span>
+              <span className="relative font-serif text-xl text-gold sm:text-4xl">س</span>
             ) : (
               <Image
                 src={brandLogo}
@@ -47,10 +49,10 @@ export function Navbar() {
             )}
           </span>
           <span className="block min-w-0">
-            <span className="block font-serif text-xl font-semibold tracking-[0.18em] text-ivory sm:text-2xl sm:tracking-[0.22em]">
+            <span className="block truncate font-serif text-lg font-semibold tracking-[0.14em] text-ivory sm:text-2xl sm:tracking-[0.22em]">
               SAHAR
             </span>
-            <span className="block whitespace-nowrap text-[8px] uppercase tracking-[0.2em] text-gold/70 sm:text-[10px] sm:tracking-[0.34em]">
+            <span className="block whitespace-nowrap text-[7px] uppercase tracking-[0.14em] text-gold/70 sm:text-[10px] sm:tracking-[0.34em]">
               Essence of Night
             </span>
           </span>
@@ -64,11 +66,11 @@ export function Navbar() {
           ))}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <button
             type="button"
             onClick={openDrawer}
-            className="relative grid h-11 w-11 place-items-center rounded-full border border-gold/15 bg-white/[0.04] text-ivory transition hover:border-gold/45"
+            className="relative grid h-10 w-10 place-items-center rounded-full border border-gold/15 bg-white/[0.04] text-ivory transition hover:border-gold/45 sm:h-11 sm:w-11"
             aria-label="Open cart"
           >
             <ShoppingBag className="h-5 w-5" />
@@ -85,7 +87,7 @@ export function Navbar() {
           </div>
           <button
             type="button"
-            className="grid h-11 w-11 place-items-center rounded-full border border-gold/15 text-ivory lg:hidden"
+            className="grid h-10 w-10 place-items-center rounded-full border border-gold/15 text-ivory lg:hidden sm:h-11 sm:w-11"
             onClick={() => setOpen((value) => !value)}
             aria-label="Toggle menu"
           >
@@ -97,12 +99,13 @@ export function Navbar() {
       <AnimatePresence>
         {open ? (
           <motion.div
-            initial={{ opacity: 0, y: -12 }}
+            initial={prefersReducedMotion ? false : { opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            className="border-t border-gold/10 bg-night/95 px-5 py-6 backdrop-blur-2xl lg:hidden"
+            exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -10 }}
+            transition={{ duration: prefersReducedMotion ? 0.01 : 0.2 }}
+            className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-gold/10 bg-night/95 px-4 py-4 backdrop-blur-xl sm:max-h-[calc(100dvh-5rem)] sm:px-5 sm:py-6 sm:backdrop-blur-2xl lg:hidden"
           >
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3 sm:gap-4">
               {links.map((link) => (
                 <Link
                   key={link.href}

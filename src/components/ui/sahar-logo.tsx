@@ -8,18 +8,22 @@ import { cn } from "@/lib/utils";
 export function SaharLogo({
   className,
   imageClassName,
-  fallbackClassName
+  fallbackClassName,
+  priority = false,
+  sizes = "(max-width: 640px) 128px, 160px"
 }: {
   className?: string;
   imageClassName?: string;
   fallbackClassName?: string;
+  priority?: boolean;
+  sizes?: string;
 }) {
   const [failed, setFailed] = useState(false);
 
   return (
     <span
       className={cn(
-        "relative inline-flex items-center justify-center overflow-hidden rounded-3xl border border-[#d8b56d]/30 bg-[#06150f]/60 shadow-glow",
+        "relative inline-flex items-center justify-center overflow-hidden rounded-3xl border border-[#d8b56d]/30 bg-[#06150f]/60 shadow-gold sm:shadow-glow",
         className
       )}
     >
@@ -43,8 +47,8 @@ export function SaharLogo({
           height={280}
           className={cn("relative h-full w-full object-contain p-0.5", imageClassName)}
           onError={() => setFailed(true)}
-          sizes="(max-width: 640px) 46px, 160px"
-          priority
+          sizes={sizes}
+          priority={priority}
         />
       )}
     </span>

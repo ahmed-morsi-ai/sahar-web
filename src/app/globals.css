@@ -17,10 +17,14 @@
 
 html {
   scroll-behavior: smooth;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
   margin: 0;
+  width: 100%;
+  max-width: 100%;
   min-height: 100vh;
   background:
     radial-gradient(circle at 15% 8%, rgba(47, 196, 141, 0.18), transparent 30rem),
@@ -28,6 +32,23 @@ body {
     linear-gradient(145deg, #020403 0%, #06100d 50%, #020403 100%);
   color: var(--ivory);
   overflow-x: hidden;
+}
+
+main {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+img,
+video {
+  display: block;
 }
 
 body::before {
@@ -59,6 +80,10 @@ input:-webkit-autofill:focus {
 
 .luxury-container {
   @apply mx-auto w-full max-w-7xl px-5 sm:px-6 lg:px-8;
+}
+
+.luxury-section {
+  @apply py-14 md:py-20 lg:py-24;
 }
 
 .glass-panel {
@@ -99,4 +124,44 @@ input:-webkit-autofill:focus {
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+@media (max-width: 640px) {
+  body {
+    background:
+      radial-gradient(circle at 22% 4%, rgba(47, 196, 141, 0.12), transparent 18rem),
+      linear-gradient(145deg, #020403 0%, #06100d 52%, #020403 100%);
+  }
+
+  body::before {
+    display: none;
+  }
+
+  .luxury-container {
+    @apply px-4;
+  }
+
+  .luxury-section {
+    padding-top: 3.5rem;
+    padding-bottom: 3.5rem;
+  }
+
+  .animated-border::before {
+    opacity: 0.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -18,7 +18,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <Providers>
           <AnalyticsTracker>
             <Navbar />
-            <main>{children}</main>
+            <main className="overflow-x-hidden">{children}</main>
             <Footer />
           </AnalyticsTracker>
         </Providers>

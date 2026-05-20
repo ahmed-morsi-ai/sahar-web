@@ -1,15 +1,22 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useMediaQuery, usePrefersReducedMotion } from "@/lib/use-media-query";
 
 export function MouseGlow() {
   const [pos, setPos] = useState({ x: -300, y: -300 });
+  const canUsePointerGlow = useMediaQuery("(min-width: 1024px) and (hover: hover) and (pointer: fine)");
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
+    if (!canUsePointerGlow || prefersReducedMotion) return;
+
     const onMove = (event: MouseEvent) => setPos({ x: event.clientX, y: event.clientY });
     window.addEventListener("mousemove", onMove);
     return () => window.removeEventListener("mousemove", onMove);
-  }, []);
+  }, [canUsePointerGlow, prefersReducedMotion]);
+
+  if (!canUsePointerGlow || prefersReducedMotion) return null;
 
   return (
     <div

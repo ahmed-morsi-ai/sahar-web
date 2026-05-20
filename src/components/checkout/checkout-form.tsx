@@ -98,8 +98,8 @@ export function CheckoutForm() {
 
   if (!isHydrated) {
     return (
-      <div className="rounded-[1.5rem] border border-gold/15 bg-white/[0.045] p-8 text-center backdrop-blur-2xl">
-        <p className="font-serif text-3xl text-ivory">Preparing your cart...</p>
+      <div className="rounded-[1.25rem] border border-gold/15 bg-white/[0.045] p-6 text-center backdrop-blur-xl sm:rounded-[1.5rem] sm:p-8 sm:backdrop-blur-2xl">
+        <p className="font-serif text-2xl text-ivory sm:text-3xl">Preparing your cart...</p>
         <p className="mt-3 text-sm text-ivory/55">Your Sahar order summary is loading.</p>
       </div>
     );
@@ -107,24 +107,24 @@ export function CheckoutForm() {
 
   if (!items.length) {
     return (
-      <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
-        <div className="rounded-[1.5rem] border border-gold/15 bg-white/[0.045] p-8 text-center backdrop-blur-2xl">
-          <div className="mx-auto grid h-16 w-16 place-items-center rounded-full border border-gold/30 bg-emerald/10 font-serif text-4xl text-gold">
+      <div className="grid gap-6 sm:gap-8 lg:grid-cols-[1fr_380px]">
+        <div className="rounded-[1.25rem] border border-gold/15 bg-white/[0.045] p-6 text-center backdrop-blur-xl sm:rounded-[1.5rem] sm:p-8 sm:backdrop-blur-2xl">
+          <div className="mx-auto grid h-14 w-14 place-items-center rounded-full border border-gold/30 bg-emerald/10 font-serif text-3xl text-gold sm:h-16 sm:w-16 sm:text-4xl">
             س
           </div>
-          <p className="mt-6 font-serif text-4xl text-ivory">Your cart is empty.</p>
+          <p className="mt-6 font-serif text-3xl text-ivory sm:text-4xl">Your cart is empty.</p>
           <p className="mx-auto mt-3 max-w-lg text-ivory/60">
             Add a fragrance before confirming your order.
           </p>
           <Link
             href="/shop"
-            className="mt-8 inline-flex h-12 items-center justify-center rounded-full bg-gold px-7 text-sm font-semibold uppercase tracking-[0.16em] text-night transition hover:bg-ivory"
+            className="mt-8 inline-flex h-12 w-full items-center justify-center rounded-full bg-gold px-7 text-sm font-semibold uppercase tracking-[0.16em] text-night transition hover:bg-ivory sm:w-auto"
           >
             Shop Collection
           </Link>
         </div>
-        <aside className="h-fit rounded-[1.5rem] border border-gold/15 bg-white/[0.045] p-5 backdrop-blur-2xl sm:p-7">
-          <p className="font-serif text-3xl text-ivory">Order Summary</p>
+        <aside className="h-fit rounded-[1.25rem] border border-gold/15 bg-white/[0.045] p-5 backdrop-blur-xl sm:rounded-[1.5rem] sm:p-7 sm:backdrop-blur-2xl">
+          <p className="font-serif text-2xl text-ivory sm:text-3xl">Order Summary</p>
           <div className="mt-6 space-y-2 text-sm text-ivory/65">
             <div className="flex justify-between">
               <span>Subtotal</span>
@@ -134,7 +134,7 @@ export function CheckoutForm() {
               <span>Shipping</span>
               <span>{formatPrice(0)}</span>
             </div>
-            <div className="flex justify-between pt-3 font-serif text-3xl text-ivory">
+            <div className="flex justify-between pt-3 font-serif text-2xl text-ivory sm:text-3xl">
               <span>Total</span>
               <span>{formatPrice(0)}</span>
             </div>
@@ -145,9 +145,9 @@ export function CheckoutForm() {
   }
 
   return (
-    <form onSubmit={submit} className="grid gap-8 lg:grid-cols-[1fr_420px]">
-      <div className="rounded-[1.5rem] border border-gold/15 bg-white/[0.045] p-5 backdrop-blur-2xl sm:p-7">
-        <p className="mb-6 font-serif text-3xl text-ivory">Customer Information</p>
+    <form onSubmit={submit} className="grid gap-6 sm:gap-8 lg:grid-cols-[1fr_420px]">
+      <div className="rounded-[1.25rem] border border-gold/15 bg-white/[0.045] p-4 backdrop-blur-xl sm:rounded-[1.5rem] sm:p-7 sm:backdrop-blur-2xl">
+        <p className="mb-5 font-serif text-2xl text-ivory sm:mb-6 sm:text-3xl">Customer Information</p>
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Full name" value={form.fullName} onChange={(value) => update("fullName", value)} required />
           <Field label="Phone number" value={form.phone} onChange={(value) => update("phone", value)} required />
@@ -175,8 +175,8 @@ export function CheckoutForm() {
         </div>
 
         <div className="mt-8">
-          <p className="mb-4 font-serif text-2xl text-ivory">Payment Method</p>
-          <div className="grid gap-3 sm:grid-cols-3">
+          <p className="mb-4 font-serif text-xl text-ivory sm:text-2xl">Payment Method</p>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             {(["Cash on delivery", "Vodafone Cash", "InstaPay"] as const).map((method) => (
               <label
                 key={method}
@@ -201,8 +201,8 @@ export function CheckoutForm() {
         </div>
       </div>
 
-      <aside className="h-fit rounded-[1.5rem] border border-gold/15 bg-white/[0.045] p-5 backdrop-blur-2xl sm:p-7 lg:sticky lg:top-28">
-        <p className="font-serif text-3xl text-ivory">Order Summary</p>
+      <aside className="h-fit rounded-[1.25rem] border border-gold/15 bg-white/[0.045] p-5 backdrop-blur-xl sm:rounded-[1.5rem] sm:p-7 sm:backdrop-blur-2xl lg:sticky lg:top-28">
+        <p className="font-serif text-2xl text-ivory sm:text-3xl">Order Summary</p>
         <div className="mt-6 space-y-4">
           {items.map((item) => (
             <div key={`${item.product.id}-${item.size}`} className="flex justify-between gap-4 border-b border-gold/10 pb-4">
@@ -225,7 +225,7 @@ export function CheckoutForm() {
             <span>Shipping</span>
             <span>{formatPrice(orderShipping)}</span>
           </div>
-          <div className="flex justify-between pt-3 font-serif text-3xl text-ivory">
+          <div className="flex justify-between pt-3 font-serif text-2xl text-ivory sm:text-3xl">
             <span>Total</span>
             <span>{formatPrice(orderTotal)}</span>
           </div>
