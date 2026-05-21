@@ -1,13 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { Menu, ShoppingBag, X } from "lucide-react";
 import { AnimatePresence, m } from "@/lib/motion";
 import { useState } from "react";
 import { useCart } from "@/lib/cart";
 import { LuxuryButton } from "@/components/ui/luxury-button";
-import { brandLogo } from "@/lib/media";
+import { SaharLogo } from "@/components/ui/sahar-logo";
 import { usePrefersReducedMotion } from "@/lib/use-media-query";
 
 const links = [
@@ -21,7 +20,6 @@ const links = [
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
-  const [logoFailed, setLogoFailed] = useState(false);
   const { itemCount, openDrawer } = useCart();
   const prefersReducedMotion = usePrefersReducedMotion();
 
@@ -29,21 +27,12 @@ export function Navbar() {
     <header className="fixed inset-x-0 top-0 z-50 border-b border-gold/10 bg-night/80 backdrop-blur-xl sm:bg-night/70 sm:backdrop-blur-2xl">
       <nav className="luxury-container flex h-16 items-center justify-between gap-2 sm:h-20">
         <Link href="/" className="flex min-w-0 items-center gap-2.5 sm:gap-3.5" aria-label="Sahar home">
-          <span className="relative grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-full border border-gold/30 bg-[#06150f]/80 shadow-[0_0_18px_rgba(47,196,141,0.18)] sm:h-16 sm:w-16 sm:shadow-[0_0_28px_rgba(47,196,141,0.2)]">
-            <span className="pointer-events-none absolute inset-1 rounded-full bg-emerald/12 blur-md" />
-            {logoFailed ? (
-              <span className="relative font-serif text-xl text-gold sm:text-4xl">س</span>
-            ) : (
-              <Image
-                src={brandLogo}
-                alt="Sahar logo"
-                fill
-                sizes="64px"
-                className="rounded-full object-contain p-0.5"
-                onError={() => setLogoFailed(true)}
-              />
-            )}
-          </span>
+          <SaharLogo
+            className="h-10 w-10 shrink-0 rounded-full border-gold/30 p-0 sm:h-16 sm:w-16"
+            imageClassName="rounded-full object-contain p-0.5"
+            sizes="64px"
+            priority
+          />
           <span className="block min-w-0">
             <span className="block truncate font-serif text-lg font-semibold tracking-[0.14em] text-ivory sm:text-2xl sm:tracking-[0.22em]">
               SAHAR

@@ -1,7 +1,5 @@
 "use client";
 
-import Image from "next/image";
-import { useState } from "react";
 import { Gem, Moon, ShieldCheck, Sparkles, Stars, Wand2, type LucideIcon } from "lucide-react";
 import type { Product } from "@/types/product";
 import { reviews } from "@/data/reviews";
@@ -17,7 +15,7 @@ import { FAQAccordion } from "@/components/ui/faq-accordion";
 import { LuxuryButton } from "@/components/ui/luxury-button";
 import { MediaRenderer } from "@/components/product/media-renderer";
 import { useCart } from "@/lib/cart";
-import { brandLogo } from "@/lib/media";
+import { SaharLogo } from "@/components/ui/sahar-logo";
 import { buildProductWhatsAppMessage, buildWhatsAppUrl } from "@/lib/whatsapp";
 import { resolveProductImage, resolveProductVideo } from "@/lib/media-utils";
 import { useAnalytics } from "@/components/analytics/AnalyticsTracker";
@@ -41,31 +39,16 @@ function ProductFeatureVideo({ fallbackImage, videoSrc, name }: { fallbackImage:
 }
 
 function BrandStoryLogo() {
-  const [logoFailed, setLogoFailed] = useState(false);
-
   return (
     <div className="relative min-h-60 overflow-hidden rounded-[1.2rem] border border-gold/15 bg-luxury-radial p-5 shadow-gold sm:min-h-72 sm:rounded-[1.4rem] sm:p-8 sm:shadow-glow">
       <div className="pointer-events-none absolute inset-x-8 top-8 hidden h-32 rounded-full bg-emerald/20 blur-3xl sm:block" />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent" />
       <div className="relative grid h-full min-h-60 place-items-center">
-        {logoFailed ? (
-          <div className="text-center">
-            <div className="mx-auto grid h-24 w-24 place-items-center rounded-full border border-gold/30 bg-black/30 font-serif text-6xl text-gold shadow-gold">
-              س
-            </div>
-            <p className="mt-5 font-serif text-3xl tracking-[0.22em] text-ivory sm:text-4xl sm:tracking-[0.28em]">SAHAR</p>
-            <p className="mt-2 text-[10px] uppercase tracking-[0.34em] text-gold/70">Essence of Night</p>
-          </div>
-        ) : (
-          <Image
-            src={brandLogo}
-            alt="Sahar brand logo"
-            fill
-            sizes="(min-width: 768px) 420px, 100vw"
-            className="object-contain p-4 drop-shadow-[0_0_34px_rgba(231,197,141,0.22)]"
-            onError={() => setLogoFailed(true)}
-          />
-        )}
+        <SaharLogo
+          className="h-40 w-56 border-none bg-transparent shadow-none sm:h-48 sm:w-64"
+          imageClassName="object-contain p-4 drop-shadow-[0_0_34px_rgba(231,197,141,0.22)]"
+          sizes="(min-width: 768px) 420px, 100vw"
+        />
       </div>
       <div className="pointer-events-none absolute inset-0 rounded-[1.4rem] ring-1 ring-inset ring-gold/10" />
     </div>

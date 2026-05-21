@@ -73,7 +73,6 @@ export function ProductDetailClient({ product, related }: { product: Product; re
           <div>
             <div className="relative aspect-square overflow-hidden rounded-[1.4rem] border border-gold/15 bg-luxury-radial shadow-gold sm:rounded-[2rem] sm:shadow-glow">
               <MediaRenderer
-                key={`${product.slug}:${activeMedia}`}
                 src={activeMedia}
                 fallbackSrc={activeMedia === detailVideo ? productImage : undefined}
                 alt={product.name}

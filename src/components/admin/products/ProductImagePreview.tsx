@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
+import { SafeImage } from "@/components/media/safe-image";
 import { resolveImageCandidates, resolveProductImage } from "@/lib/media-utils";
 
 export function ProductImagePreview({
@@ -15,25 +15,15 @@ export function ProductImagePreview({
 }) {
   const imageSrc = resolveProductImage(src);
   const candidates = useMemo(() => resolveImageCandidates(imageSrc), [imageSrc]);
-  const candidatesKey = candidates.join("|");
-  const [activeIndex, setActiveIndex] = useState(0);
-  const activeSrc = candidates[activeIndex] ?? imageSrc;
-
-  useEffect(() => {
-    setActiveIndex(0);
-  }, [candidatesKey]);
 
   return (
     <div className={`relative shrink-0 overflow-hidden rounded-2xl border border-gold/15 bg-luxury-radial ${className}`}>
-      <Image
-        src={activeSrc}
+      <SafeImage
+        src={imageSrc}
         alt={alt}
-        fill
         sizes="96px"
+        fallbackCandidates={candidates}
         className="object-contain p-2"
-        onError={() => {
-          setActiveIndex((current) => (current + 1 < candidates.length ? current + 1 : current));
-        }}
       />
     </div>
   );

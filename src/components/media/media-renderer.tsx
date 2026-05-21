@@ -102,12 +102,13 @@ export const MediaRenderer = memo(function MediaRenderer({
   const wrapperClassName = withPositioning(className);
   const isMobile = useIsMobile();
   const prefersReducedMotion = usePrefersReducedMotion();
-  const isInView = useInViewport(wrapperRef, "260px", 0.05);
+  const isInView = useInViewport(wrapperRef, "120px", 0.08);
 
   const candidates = useMemo(() => {
     const resolved = resolveMediaCandidates(src, fallbackSrc);
     if (disableVideoOnMobile && isMobile) {
-      return resolved.filter((candidate) => candidate.kind !== "video");
+      const imagesOnly = resolved.filter((candidate) => candidate.kind !== "video");
+      return imagesOnly.length ? imagesOnly : resolveMediaCandidates(fallbackSrc ?? PRODUCT_IMAGE_PLACEHOLDER);
     }
     return resolved;
   }, [disableVideoOnMobile, fallbackSrc, isMobile, src]);
@@ -135,11 +136,11 @@ export const MediaRenderer = memo(function MediaRenderer({
     });
   }, [candidates.length]);
 
-  const current = candidates[candidateIndex];
+  const current = exhausted ? undefined : candidates[candidateIndex];
   const isVideo = current?.kind === "video";
-  const videoDisabled = (disableVideoOnMobile && isMobile) || prefersReducedMotion;
+  const videoDisabled = prefersReducedMotion;
   const videoInView = !lazyVideo || isInView;
-  const shouldRenderVideo = Boolean(isVideo && !videoDisabled && videoInView && current && !exhausted);
+  const shouldRenderVideo = Boolean(isVideo && !videoDisabled && videoInView && current);
   const shouldPlay =
     shouldRenderVideo && autoPlay && isInView && (!isMobile || allowMobileAutoPlay);
   const showNativeControls = controlsOnMobile && isMobile && shouldRenderVideo;
@@ -159,25 +160,18 @@ export const MediaRenderer = memo(function MediaRenderer({
     video.pause();
   }, [current?.src, shouldPlay, shouldRenderVideo, showNativeControls]);
 
-  if (!current || exhausted) {
-    return (
-      <MediaFrame ref={wrapperRef} className={wrapperClassName} aspectRatio={aspectRatio}>
-        <CandidateImage
-          candidates={[PRODUCT_IMAGE_PLACEHOLDER]}
-          alt={fallbackLabel}
-          fallbackLabel={fallbackLabel}
-          imageClassName={imageClassName}
-          sizes={sizes}
-          priority={priority}
-        />
-      </MediaFrame>
-    );
-  }
+  const imageCandidates = useMemo(() => {
+    if (!current) return [PRODUCT_IMAGE_PLACEHOLDER];
+    if (current.kind === "image") {
+      return candidates.slice(candidateIndex).map((item) => item.src);
+    }
+    return fallbackImageCandidates;
+  }, [candidateIndex, candidates, current, fallbackImageCandidates]);
 
-  if (shouldRenderVideo) {
-    return (
-      <MediaFrame ref={wrapperRef} className={wrapperClassName} aspectRatio={aspectRatio}>
-        {poster && poster !== PRODUCT_IMAGE_PLACEHOLDER ? (
+  return (
+    <MediaFrame ref={wrapperRef} className={wrapperClassName} aspectRatio={aspectRatio}>
+      {shouldRenderVideo && current ? (
+        <>
           <Image
             src={poster}
             alt=""
@@ -188,43 +182,25 @@ export const MediaRenderer = memo(function MediaRenderer({
             placeholder={posterBlur ? "blur" : "empty"}
             blurDataURL={posterBlur}
           />
-        ) : (
-          <div className="absolute inset-0 bg-[#08100d]" aria-hidden />
-        )}
-        <video
-          ref={videoRef}
-          src={current.src}
-          className={cn(mediaClassName, "relative z-[1] rounded-[inherit]")}
-          autoPlay={shouldPlay}
-          muted
-          loop={loop}
-          playsInline
-          controls={showNativeControls}
-          preload={videoPreload}
-          poster={poster}
-          disablePictureInPicture
-          disableRemotePlayback
-          onError={advanceCandidate}
-        />
-      </MediaFrame>
-    );
-  }
-
-  return (
-    <MediaFrame ref={wrapperRef} className={wrapperClassName} aspectRatio={aspectRatio}>
-      {current.kind === "image" ? (
-        <CandidateImage
-          candidates={candidates.slice(candidateIndex).map((item) => item.src)}
-          alt={alt}
-          fallbackLabel={fallbackLabel}
-          imageClassName={imageClassName}
-          sizes={sizes}
-          priority={priority}
-          onExhausted={() => setExhausted(true)}
-        />
+          <video
+            ref={videoRef}
+            src={current.src}
+            className={cn(mediaClassName, "relative z-[1] rounded-[inherit]")}
+            autoPlay={shouldPlay}
+            muted
+            loop={loop}
+            playsInline
+            controls={showNativeControls}
+            preload={videoPreload}
+            poster={poster}
+            disablePictureInPicture
+            disableRemotePlayback
+            onError={advanceCandidate}
+          />
+        </>
       ) : (
         <CandidateImage
-          candidates={fallbackImageCandidates}
+          candidates={imageCandidates}
           alt={alt}
           fallbackLabel={fallbackLabel}
           imageClassName={imageClassName}

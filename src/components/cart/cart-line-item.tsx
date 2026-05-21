@@ -1,22 +1,27 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import type { CartItem } from "@/types/cart";
 import { formatPrice } from "@/lib/utils";
 import { useCart } from "@/lib/cart";
 import { getCartItemUnitPrice } from "@/lib/whatsapp";
+import { SafeImage } from "@/components/media/safe-image";
 import { resolveProductImage } from "@/lib/media-utils";
 
 export function CartLineItem({ item }: { item: CartItem }) {
   const { updateQuantity, removeItem } = useCart();
-  const productImage = resolveProductImage(item.product.image);
+  const productImage = resolveProductImage(item.product.imageUrl || item.product.image);
 
   return (
     <div className="grid grid-cols-[72px_1fr] gap-3 rounded-xl border border-gold/12 bg-white/[0.035] p-3 sm:grid-cols-[86px_1fr] sm:gap-4 sm:rounded-2xl">
       <Link href={`/product/${item.product.slug}`} className="relative aspect-square overflow-hidden rounded-xl bg-luxury-radial">
-        <Image src={productImage} alt={item.product.name} fill sizes="(min-width: 640px) 86px, 72px" className="object-contain p-2 sm:p-3" />
+        <SafeImage
+          src={productImage}
+          alt={item.product.name}
+          sizes="(min-width: 640px) 86px, 72px"
+          className="object-contain p-2 sm:p-3"
+        />
       </Link>
       <div>
         <div className="flex items-start justify-between gap-3">

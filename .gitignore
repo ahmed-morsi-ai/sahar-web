@@ -9,3 +9,4 @@ build
 *.log
 prisma/dev.db-journal
 .vercel
+tsconfig.tsbuildinfo

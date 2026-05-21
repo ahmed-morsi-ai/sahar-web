@@ -1,37 +1,24 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { Eye, Plus, Star } from "lucide-react";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback } from "react";
 import type { Product } from "@/types/product";
 import { formatPrice } from "@/lib/utils";
 import { useCart } from "@/lib/cart";
-import { resolveImageCandidates, resolveProductImage } from "@/lib/media-utils";
+import { SafeImage } from "@/components/media/safe-image";
+import { resolveProductImage } from "@/lib/media-utils";
 import { useAnalytics } from "@/components/analytics/AnalyticsTracker";
 
 function ProductCardMedia({ product }: { product: Product }) {
   const imageSrc = resolveProductImage(product.imageUrl || product.image);
-  const imageCandidates = useMemo(() => resolveImageCandidates(imageSrc), [imageSrc]);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const activeSrc = imageCandidates[activeIndex] ?? imageSrc;
-
-  const imageCandidatesKey = imageCandidates.join("|");
-
-  useEffect(() => {
-    setActiveIndex(0);
-  }, [imageCandidatesKey]);
 
   return (
-    <Image
-      src={activeSrc}
+    <SafeImage
+      src={imageSrc}
       alt={`${product.name} bottle`}
-      fill
       sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
       className="object-contain p-6 transition duration-500 sm:p-8 sm:duration-700 sm:group-hover:scale-105"
-      onError={() => {
-        setActiveIndex((current) => (current + 1 < imageCandidates.length ? current + 1 : current));
-      }}
     />
   );
 }

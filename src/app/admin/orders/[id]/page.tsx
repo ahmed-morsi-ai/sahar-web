@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
@@ -7,7 +6,7 @@ import { OrderActions } from "@/components/admin/OrderActions";
 import { OrderStatusBadge } from "@/components/admin/OrderStatusBadge";
 import { OrderStatusSelect } from "@/components/admin/OrderStatusSelect";
 import { getOrderById } from "@/lib/actions/admin";
-import { resolveProductImage } from "@/lib/media-utils";
+import { OrderItemThumbnail } from "@/components/admin/OrderItemThumbnail";
 import { formatPrice } from "@/lib/money";
 import { paymentMethodLabels, type OrderStatusValue, type PaymentMethodValue } from "@/types/order";
 
@@ -66,7 +65,7 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
               {order.items.map((item) => (
                 <div key={item.id} className="grid gap-4 py-4 sm:grid-cols-[72px_1fr_auto] sm:items-center">
                   <div className="relative h-[72px] w-[72px] overflow-hidden rounded-2xl border border-gold/10 bg-white/[0.04]">
-                    <Image src={resolveProductImage(item.productImage)} alt="" fill className="object-cover" />
+                    <OrderItemThumbnail src={item.productImage} alt={item.productName} />
                   </div>
                   <div>
                     <p className="font-semibold text-ivory">{item.productName}</p>

@@ -101,12 +101,12 @@ export function HeroSection({ featured }: { featured?: Product }) {
                 alt="Sahar Ombre Mystique perfume campaign video"
                 fallbackLabel={featuredProduct.name}
                 className="relative h-full w-full"
-                mediaClassName="relative h-full w-full object-cover"
+                mediaClassName="h-full w-full object-cover"
                 imageClassName="object-contain p-8 sm:p-12"
                 sizes="(min-width: 1024px) 44vw, (min-width: 640px) 520px, 100vw"
                 priority
-                lazyVideo={false}
-                preload="metadata"
+                lazyVideo
+                preload="none"
                 disableVideoOnMobile
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />

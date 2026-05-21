@@ -14,25 +14,17 @@ function withoutQueryOrHash(src: string) {
   return src.split(/[?#]/, 1)[0] ?? src;
 }
 
-function localOptimizedPath(src: string, extension: string) {
+function siblingWebpPath(src: string) {
   if (isRemoteUrl(src)) return undefined;
 
   const path = withoutQueryOrHash(src);
-  if (!path.startsWith("/")) return undefined;
+  if (!/\.(png|jpe?g)$/i.test(path)) return undefined;
 
-  const dotIndex = path.lastIndexOf(".");
-  const base = dotIndex >= 0 ? path.slice(0, dotIndex) : path;
-  return `/optimized${base}${extension}`;
-}
-
-function siblingPathWithExtension(src: string, extension: string) {
-  if (isRemoteUrl(src)) return undefined;
-
-  const path = withoutQueryOrHash(src);
   const dotIndex = path.lastIndexOf(".");
   if (dotIndex < 0) return undefined;
 
-  return `${path.slice(0, dotIndex)}${extension}`;
+  const webpPath = `${path.slice(0, dotIndex)}.webp`;
+  return webpPath === path ? undefined : webpPath;
 }
 
 function uniqueMediaSources(values: Array<string | undefined | null>) {
@@ -73,6 +65,7 @@ export function getMediaKind(src?: string | null): MediaKind {
   return "unknown";
 }
 
+/** Primary path first, optional sibling .webp, then fallback — no speculative /optimized URLs. */
 export function resolveImageCandidates(image?: string | null, fallbackImage?: string | null): string[] {
   const current = cleanMediaSrc(image);
   const fallback = cleanMediaSrc(fallbackImage);
@@ -80,18 +73,14 @@ export function resolveImageCandidates(image?: string | null, fallbackImage?: st
 
   if (isRenderableImagePath(current)) {
     candidates.push(current);
-    if (!current.endsWith(".svg")) {
-      candidates.push(localOptimizedPath(current, ".webp"));
-      candidates.push(siblingPathWithExtension(current, ".webp"));
-    }
+    const webp = siblingWebpPath(current);
+    if (webp) candidates.push(webp);
   }
 
   if (fallback && fallback !== current && isRenderableImagePath(fallback)) {
     candidates.push(fallback);
-    if (!fallback.endsWith(".svg")) {
-      candidates.push(localOptimizedPath(fallback, ".webp"));
-      candidates.push(siblingPathWithExtension(fallback, ".webp"));
-    }
+    const fallbackWebp = siblingWebpPath(fallback);
+    if (fallbackWebp) candidates.push(fallbackWebp);
   }
 
   candidates.push(PRODUCT_IMAGE_PLACEHOLDER);
@@ -103,11 +92,7 @@ export function resolveVideoCandidates(video?: string | null): string[] {
   const current = cleanMediaSrc(video);
   if (!isVideoPath(current)) return [];
 
-  return uniqueMediaSources([
-    current,
-    localOptimizedPath(current, ".mp4"),
-    siblingPathWithExtension(current, ".mp4")
-  ]).filter(isVideoPath);
+  return uniqueMediaSources([current]).filter(isVideoPath);
 }
 
 export function resolveMediaCandidates(src?: string | null, fallbackImage?: string | null): MediaCandidate[] {
@@ -165,3 +150,8 @@ export function resolveProductVideo(_slug: string, video?: string | null) {
 
   return undefined;
 }
+
+export const BRAND_LOGO_CANDIDATES = [
+  "/images/sahar-logo.png",
+  PRODUCT_IMAGE_PLACEHOLDER
+] as const;
