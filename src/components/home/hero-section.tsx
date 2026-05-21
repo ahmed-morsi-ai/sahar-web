@@ -1,11 +1,12 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "@/lib/motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { LuxuryButton } from "@/components/ui/luxury-button";
 import { resolveProductImage } from "@/lib/media-utils";
 import { useAnalytics } from "@/components/analytics/AnalyticsTracker";
-import { useMediaQuery, usePrefersReducedMotion } from "@/lib/use-media-query";
+import { useIsMobile, usePrefersReducedMotion } from "@/lib/use-media-query";
+import { MediaRenderer } from "@/components/product/media-renderer";
 import type { Product } from "@/types/product";
 
 const heroVideo = "/videos/sahar-hero.mp4";
@@ -17,7 +18,7 @@ const fallbackFeaturedProduct = {
 
 export function HeroSection({ featured }: { featured?: Product }) {
   const { track } = useAnalytics();
-  const isMobile = useMediaQuery("(max-width: 640px)");
+  const isMobile = useIsMobile();
   const prefersReducedMotion = usePrefersReducedMotion();
   const reduceHeroMotion = isMobile || prefersReducedMotion;
   const featuredProduct = featured
@@ -32,7 +33,7 @@ export function HeroSection({ featured }: { featured?: Product }) {
       <div className="absolute inset-0 -z-10 bg-luxury-radial" />
       <div className="absolute inset-x-0 bottom-0 -z-10 h-48 bg-gradient-to-t from-night to-transparent" />
       <div className="luxury-container grid min-h-[calc(100svh-5rem)] items-center gap-8 py-8 sm:gap-10 sm:py-12 lg:min-h-[calc(100vh-7rem)] lg:grid-cols-[1fr_.9fr] lg:gap-12 lg:py-16">
-        <motion.div
+        <m.div
           initial={prefersReducedMotion ? false : { opacity: 0, y: reduceHeroMotion ? 12 : 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: reduceHeroMotion ? 0.45 : 1, ease: [0.22, 1, 0.36, 1] }}
@@ -83,9 +84,9 @@ export function HeroSection({ featured }: { featured?: Product }) {
               </div>
             ))}
           </div>
-        </motion.div>
+        </m.div>
 
-        <motion.div
+        <m.div
           initial={prefersReducedMotion ? false : { opacity: 0, scale: reduceHeroMotion ? 0.98 : 0.94 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: reduceHeroMotion ? 0.45 : 1.1, delay: reduceHeroMotion ? 0.05 : 0.15, ease: [0.22, 1, 0.36, 1] }}
@@ -94,17 +95,20 @@ export function HeroSection({ featured }: { featured?: Product }) {
           <div className="animated-border relative h-[340px] overflow-hidden rounded-[1.4rem] bg-night p-px shadow-gold sm:aspect-[4/5] sm:h-auto sm:rounded-[2rem] sm:shadow-glow">
             <div className="relative h-full overflow-hidden rounded-[1.35rem] bg-luxury-radial sm:rounded-[1.95rem]">
               <div className="absolute inset-x-10 top-12 hidden h-72 rounded-full bg-emerald/20 blur-3xl sm:block" />
-              <video
-                className="relative h-full w-full object-cover"
-                autoPlay={!prefersReducedMotion}
-                muted
-                playsInline
-                preload="auto"
-                poster={featuredProduct.image}
-                aria-label="Sahar Ombre Mystique perfume campaign video"
-              >
-                <source src={heroVideo} type="video/mp4" />
-              </video>
+              <MediaRenderer
+                src={heroVideo}
+                fallbackSrc={featuredProduct.image}
+                alt="Sahar Ombre Mystique perfume campaign video"
+                fallbackLabel={featuredProduct.name}
+                className="relative h-full w-full"
+                mediaClassName="relative h-full w-full object-cover"
+                imageClassName="object-contain p-8 sm:p-12"
+                sizes="(min-width: 1024px) 44vw, (min-width: 640px) 520px, 100vw"
+                priority
+                lazyVideo={false}
+                preload="metadata"
+                disableVideoOnMobile
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
             </div>
           </div>
@@ -112,7 +116,7 @@ export function HeroSection({ featured }: { featured?: Product }) {
             <p className="text-[10px] uppercase tracking-[0.2em] text-gold/75 sm:text-xs sm:tracking-[0.25em]">Featured Scent</p>
             <p className="mt-1 font-serif text-2xl text-ivory sm:text-3xl">{featuredProduct.name}</p>
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </section>
   );

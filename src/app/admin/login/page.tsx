@@ -4,7 +4,6 @@ import { FormEvent, useState, useTransition } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, Lock, Mail, Sparkles } from "lucide-react";
-import { motion } from "framer-motion";
 import { SaharLogo } from "@/components/ui/sahar-logo";
 
 export default function AdminLoginPage() {
@@ -54,12 +53,7 @@ export default function AdminLoginPage() {
         <div className="absolute inset-0 bg-[linear-gradient(rgba(248,240,223,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(248,240,223,0.025)_1px,transparent_1px)] bg-[size:84px_84px] opacity-35" />
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 24, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        className="relative w-full max-w-md"
-      >
+      <div className="animate-fade-in-up relative w-full max-w-md">
         <div className="absolute -inset-px rounded-[2rem] bg-gradient-to-b from-[#e7c58d]/45 via-[#2fc48d]/15 to-transparent opacity-75 blur-sm" />
         <form
           onSubmit={submit}
@@ -68,18 +62,13 @@ export default function AdminLoginPage() {
           <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-[#e7c58d] to-transparent" />
 
           <div className="text-center">
-            <motion.div
-              initial={{ rotate: -8, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              transition={{ delay: 0.15, duration: 0.6 }}
-              className="mx-auto w-fit"
-            >
+            <div className="animate-fade-in mx-auto w-fit [animation-delay:150ms]">
               <SaharLogo
                 className="h-28 w-40 rounded-[1.6rem] border-[#e7c58d]/35 bg-[#06150f]/70 p-3 shadow-[0_0_45px_rgba(47,196,141,0.24)]"
                 imageClassName="p-0"
                 fallbackClassName="text-3xl"
               />
-            </motion.div>
+            </div>
             <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#e7c58d]/15 bg-black/20 px-4 py-2 text-[11px] uppercase tracking-[0.32em] text-[#e7c58d]/75">
               <Sparkles className="h-3.5 w-3.5" />
               SAHAR ADMIN
@@ -167,7 +156,7 @@ export default function AdminLoginPage() {
             Protected Sahar operations area. Authorized administrators only.
           </p>
         </form>
-      </motion.div>
+      </div>
     </section>
   );
 }

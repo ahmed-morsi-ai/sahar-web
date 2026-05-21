@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Instagram, Mail, MessageCircle, MapPin } from "lucide-react";
 import { NewsletterForm } from "@/components/ui/newsletter-form";
 import { SaharLogo } from "@/components/ui/sahar-logo";
@@ -17,10 +16,6 @@ const quickLinks = [
 ];
 
 export function Footer() {
-  const pathname = usePathname();
-
-  if (pathname.startsWith("/admin")) return null;
-
   return (
     <footer className="border-t border-gold/10 bg-black/30 py-10 sm:py-14">
       <div className="luxury-container grid gap-10 lg:grid-cols-[1.2fr_.8fr_1fr]">

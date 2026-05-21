@@ -3,31 +3,24 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Eye, Plus, Star } from "lucide-react";
-import { useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import type { Product } from "@/types/product";
 import { formatPrice } from "@/lib/utils";
 import { useCart } from "@/lib/cart";
-import { PRODUCT_IMAGE_PLACEHOLDER, resolveProductImage } from "@/lib/media-utils";
+import { resolveImageCandidates, resolveProductImage } from "@/lib/media-utils";
 import { useAnalytics } from "@/components/analytics/AnalyticsTracker";
 
 function ProductCardMedia({ product }: { product: Product }) {
   const imageSrc = resolveProductImage(product.imageUrl || product.image);
-  const [activeSrc, setActiveSrc] = useState(imageSrc);
+  const imageCandidates = useMemo(() => resolveImageCandidates(imageSrc), [imageSrc]);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const activeSrc = imageCandidates[activeIndex] ?? imageSrc;
+
+  const imageCandidatesKey = imageCandidates.join("|");
 
   useEffect(() => {
-    setActiveSrc(imageSrc);
-  }, [imageSrc]);
-
-  useEffect(() => {
-    if (process.env.NODE_ENV !== "production") {
-      console.debug("[product-card:media]", {
-        slug: product.slug,
-        image: imageSrc,
-        rawImage: product.image,
-        video: product.video
-      });
-    }
-  }, [imageSrc, product.image, product.slug, product.video]);
+    setActiveIndex(0);
+  }, [imageCandidatesKey]);
 
   return (
     <Image
@@ -37,28 +30,26 @@ function ProductCardMedia({ product }: { product: Product }) {
       sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
       className="object-contain p-6 transition duration-500 sm:p-8 sm:duration-700 sm:group-hover:scale-105"
       onError={() => {
-        if (activeSrc !== PRODUCT_IMAGE_PLACEHOLDER) {
-          setActiveSrc(PRODUCT_IMAGE_PLACEHOLDER);
-        }
+        setActiveIndex((current) => (current + 1 < imageCandidates.length ? current + 1 : current));
       }}
     />
   );
 }
 
-export function ProductCard({ product, onQuickView }: { product: Product; onQuickView?: (product: Product) => void }) {
+export const ProductCard = memo(function ProductCard({ product, onQuickView }: { product: Product; onQuickView?: (product: Product) => void }) {
   const { addItem } = useCart();
   const { track } = useAnalytics();
 
-  function trackViewDetails(source: string) {
+  const trackViewDetails = useCallback((source: string) => {
     track({
       type: "view_details",
       productSlug: product.slug,
       productName: product.name,
       metadata: { source }
     });
-  }
+  }, [product.name, product.slug, track]);
 
-  function addProductToCart() {
+  const addProductToCart = useCallback(() => {
     track({
       type: "add_to_cart",
       productSlug: product.slug,
@@ -66,7 +57,7 @@ export function ProductCard({ product, onQuickView }: { product: Product; onQuic
       metadata: { source: "product_card" }
     });
     addItem(product);
-  }
+  }, [addItem, product, track]);
 
   return (
     <article className="group animated-border rounded-[1.2rem] bg-night/80 p-px shadow-xl transition duration-300 sm:rounded-[1.35rem] sm:shadow-2xl sm:hover:-translate-y-2 sm:hover:shadow-glow">
@@ -164,4 +155,4 @@ export function ProductCard({ product, onQuickView }: { product: Product; onQuic
       </div>
     </article>
   );
-}
+});

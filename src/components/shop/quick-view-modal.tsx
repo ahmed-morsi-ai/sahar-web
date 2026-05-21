@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "@/lib/motion";
 import Link from "next/link";
 import { X } from "lucide-react";
 import type { Product } from "@/types/product";
@@ -21,7 +21,7 @@ export function QuickViewModal({ product, onClose }: { product: Product | null; 
   return (
     <AnimatePresence>
       {product ? (
-        <motion.div
+        <m.div
           className="fixed inset-0 z-[70] grid place-items-center bg-black/70 p-3 backdrop-blur-lg sm:p-4 sm:backdrop-blur-xl"
           initial={prefersReducedMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -29,7 +29,7 @@ export function QuickViewModal({ product, onClose }: { product: Product | null; 
           transition={{ duration: prefersReducedMotion ? 0.01 : 0.2 }}
           onClick={onClose}
         >
-          <motion.div
+          <m.div
             initial={prefersReducedMotion ? false : { scale: 0.98, y: 14 }}
             animate={{ scale: 1, y: 0 }}
             exit={prefersReducedMotion ? { opacity: 0 } : { scale: 0.98, y: 14 }}
@@ -96,8 +96,8 @@ export function QuickViewModal({ product, onClose }: { product: Product | null; 
                 Checkout after adding to cart
               </Link>
             </div>
-          </motion.div>
-        </motion.div>
+          </m.div>
+        </m.div>
       ) : null}
     </AnimatePresence>
   );

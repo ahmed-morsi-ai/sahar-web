@@ -6,6 +6,7 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 model User {
   id           String   @id @default(cuid())
   name         String   @default("Sahar Admin")
@@ -163,4 +164,17 @@ model AnalyticsEvent {
   @@index([type, createdAt])
   @@index([visitorId, type, createdAt])
   @@index([sessionId, type, createdAt])
+}
+
+model MediaAsset {
+  id           String   @id @default(cuid())
+  type         String
+  originalUrl  String
+  optimizedUrl String
+  thumbnailUrl String?
+  width        Int?
+  height       Int?
+  size         Int?
+  duration     Float?
+  createdAt    DateTime @default(now())
 }

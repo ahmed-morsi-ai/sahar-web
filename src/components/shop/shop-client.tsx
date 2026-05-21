@@ -1,11 +1,16 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Product } from "@/types/product";
 import { ProductFilters } from "@/components/shop/product-filters";
 import { ProductGrid } from "@/components/shop/product-grid";
-import { QuickViewModal } from "@/components/shop/quick-view-modal";
 import { useAnalytics } from "@/components/analytics/AnalyticsTracker";
+
+const QuickViewModal = dynamic(
+  () => import("@/components/shop/quick-view-modal").then((mod) => mod.QuickViewModal),
+  { ssr: false }
+);
 
 export function ShopClient({ products }: { products: Product[] }) {
   const { track } = useAnalytics();

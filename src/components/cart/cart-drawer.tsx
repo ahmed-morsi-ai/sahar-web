@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "@/lib/motion";
 import { X } from "lucide-react";
 import Link from "next/link";
 import { useCart } from "@/lib/cart";
@@ -15,14 +15,14 @@ export function CartDrawer() {
     <AnimatePresence>
       {isDrawerOpen ? (
         <>
-          <motion.div
+          <m.div
             className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={closeDrawer}
           />
-          <motion.aside
+          <m.aside
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
@@ -97,7 +97,7 @@ export function CartDrawer() {
                 </button>
               </div>
             ) : null}
-          </motion.aside>
+          </m.aside>
         </>
       ) : null}
     </AnimatePresence>

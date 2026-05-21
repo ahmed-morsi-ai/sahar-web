@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { m } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { useMediaQuery, usePrefersReducedMotion } from "@/lib/use-media-query";
 
@@ -38,9 +38,9 @@ export function LuxuryButton({
   );
 
   const content = (
-    <motion.span whileHover={interactionMotion} whileTap={prefersReducedMotion ? undefined : { scale: 0.98 }} className={classes}>
+    <m.span whileHover={interactionMotion} whileTap={prefersReducedMotion ? undefined : { scale: 0.98 }} className={classes}>
       {children}
-    </motion.span>
+    </m.span>
   );
 
   if (href) return <Link href={href} onClick={onClick}>{content}</Link>;

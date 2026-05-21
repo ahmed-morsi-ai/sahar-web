@@ -13,7 +13,7 @@ npm install -D @types/bcrypt tsx
 Create `.env` from `.env.example` and set real values:
 
 ```env
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/sahar_store?schema=public"
 NEXTAUTH_SECRET="replace-with-secure-secret"
 NEXTAUTH_URL="http://localhost:3000"
 ADMIN_EMAIL="admin@sahar.com"
@@ -27,12 +27,12 @@ Generate a strong auth secret:
 openssl rand -base64 32
 ```
 
-## Local SQLite
+## Local PostgreSQL
 
-No PostgreSQL install is required for local development. Prisma creates `prisma/dev.db` automatically from:
+Use a local PostgreSQL database or a managed development database such as Neon. The Prisma schema and migrations are PostgreSQL-native so local, preview, and production environments stay consistent:
 
 ```env
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/sahar_store?schema=public"
 ```
 
 ## Prisma
@@ -100,7 +100,7 @@ Use international format without `+`.
 
 ## Deploy To Vercel
 
-1. For the simplest deployment, use a managed SQLite-compatible provider or switch the Prisma datasource back to PostgreSQL before deploying to a PostgreSQL host.
+1. Use a managed PostgreSQL provider such as Neon, Supabase, or Vercel Postgres.
 2. Add the production `DATABASE_URL` in Vercel Project Settings.
 3. Add `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and `NEXT_PUBLIC_WHATSAPP_NUMBER` in Vercel Project Settings.
 4. Set `NEXTAUTH_URL` to the production domain, for example `https://sahar.com`.

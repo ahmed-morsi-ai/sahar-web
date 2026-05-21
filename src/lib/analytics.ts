@@ -1,5 +1,6 @@
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { isRecoverablePrismaReadError } from "@/lib/prisma-errors";
 
 export const analyticsEventTypes = [
   "page_view",
@@ -165,74 +166,82 @@ export async function recordAnalyticsEvent(input: TrackAnalyticsInput, headers: 
   const productViewIncrement = input.type === "product_view" ? 1 : 0;
   const endedAt = shouldEndSession(input.type, input.metadata) ? now : null;
 
-  await prisma.$transaction(async (tx) => {
-    await tx.analyticsVisitor.upsert({
-      where: { visitorId: input.visitorId },
-      create: {
-        visitorId: input.visitorId,
-        firstSeenAt: now,
-        lastSeenAt: now,
-        userAgent,
-        country,
-        city
-      },
-      update: {
-        lastSeenAt: now,
-        userAgent,
-        country,
-        city
-      }
-    });
+  try {
+    await prisma.$transaction(async (tx) => {
+      await tx.analyticsVisitor.upsert({
+        where: { visitorId: input.visitorId },
+        create: {
+          visitorId: input.visitorId,
+          firstSeenAt: now,
+          lastSeenAt: now,
+          userAgent,
+          country,
+          city
+        },
+        update: {
+          lastSeenAt: now,
+          userAgent,
+          country,
+          city
+        }
+      });
 
-    const existingSession = await tx.analyticsSession.findUnique({
-      where: { sessionId: input.sessionId },
-      select: { startedAt: true, durationSeconds: true }
-    });
-    const startedAt = existingSession?.startedAt ?? now;
-    const durationSeconds = Math.max(
-      existingSession?.durationSeconds ?? 0,
-      Math.round((now.getTime() - startedAt.getTime()) / 1000)
-    );
+      const existingSession = await tx.analyticsSession.findUnique({
+        where: { sessionId: input.sessionId },
+        select: { startedAt: true, durationSeconds: true }
+      });
+      const startedAt = existingSession?.startedAt ?? now;
+      const durationSeconds = Math.max(
+        existingSession?.durationSeconds ?? 0,
+        Math.round((now.getTime() - startedAt.getTime()) / 1000)
+      );
 
-    await tx.analyticsSession.upsert({
-      where: { sessionId: input.sessionId },
-      create: {
-        sessionId: input.sessionId,
-        visitorId: input.visitorId,
-        startedAt,
-        lastSeenAt: now,
-        endedAt,
-        durationSeconds,
-        pageViews: pageViewIncrement,
-        productViews: productViewIncrement,
-        engagementScore: score,
-        referrer,
-        landingPage: input.path
-      },
-      update: {
-        visitorId: input.visitorId,
-        lastSeenAt: now,
-        ...(endedAt ? { endedAt } : {}),
-        durationSeconds,
-        pageViews: { increment: pageViewIncrement },
-        productViews: { increment: productViewIncrement },
-        engagementScore: { increment: score }
-      }
-    });
+      await tx.analyticsSession.upsert({
+        where: { sessionId: input.sessionId },
+        create: {
+          sessionId: input.sessionId,
+          visitorId: input.visitorId,
+          startedAt,
+          lastSeenAt: now,
+          endedAt,
+          durationSeconds,
+          pageViews: pageViewIncrement,
+          productViews: productViewIncrement,
+          engagementScore: score,
+          referrer,
+          landingPage: input.path
+        },
+        update: {
+          visitorId: input.visitorId,
+          lastSeenAt: now,
+          ...(endedAt ? { endedAt } : {}),
+          durationSeconds,
+          pageViews: { increment: pageViewIncrement },
+          productViews: { increment: productViewIncrement },
+          engagementScore: { increment: score }
+        }
+      });
 
-    await tx.analyticsEvent.create({
-      data: {
-        visitorId: input.visitorId,
-        sessionId: input.sessionId,
-        type: input.type,
-        path: input.path,
-        productSlug: input.productSlug ?? null,
-        productName: input.productName ?? null,
-        metadata,
-        createdAt: now
-      }
+      await tx.analyticsEvent.create({
+        data: {
+          visitorId: input.visitorId,
+          sessionId: input.sessionId,
+          type: input.type,
+          path: input.path,
+          productSlug: input.productSlug ?? null,
+          productName: input.productName ?? null,
+          metadata,
+          createdAt: now
+        }
+      });
     });
-  });
+  } catch (error) {
+    if (isRecoverablePrismaReadError(error)) {
+      return { ok: true, ignored: true, reason: "database_unavailable" };
+    }
+
+    throw error;
+  }
 
   return { ok: true, ignored: false };
 }

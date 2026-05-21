@@ -30,6 +30,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    if (process.env.VERCEL) {
+      return NextResponse.json(
+        { error: "Product video uploads need persistent object storage in production." },
+        { status: 501 }
+      );
+    }
+
     const formData = await request.formData();
     const file = formData.get("file");
 

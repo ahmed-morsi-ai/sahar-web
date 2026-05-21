@@ -3,9 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Menu, ShoppingBag, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, m } from "@/lib/motion";
 import { useState } from "react";
-import { usePathname } from "next/navigation";
 import { useCart } from "@/lib/cart";
 import { LuxuryButton } from "@/components/ui/luxury-button";
 import { brandLogo } from "@/lib/media";
@@ -21,13 +20,10 @@ const links = [
 ];
 
 export function Navbar() {
-  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [logoFailed, setLogoFailed] = useState(false);
   const { itemCount, openDrawer } = useCart();
   const prefersReducedMotion = usePrefersReducedMotion();
-
-  if (pathname.startsWith("/admin")) return null;
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-gold/10 bg-night/80 backdrop-blur-xl sm:bg-night/70 sm:backdrop-blur-2xl">
@@ -98,7 +94,7 @@ export function Navbar() {
 
       <AnimatePresence>
         {open ? (
-          <motion.div
+          <m.div
             initial={prefersReducedMotion ? false : { opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -10 }}
@@ -117,7 +113,7 @@ export function Navbar() {
                 </Link>
               ))}
             </div>
-          </motion.div>
+          </m.div>
         ) : null}
       </AnimatePresence>
     </header>

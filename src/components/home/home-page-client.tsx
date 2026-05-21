@@ -33,7 +33,8 @@ function ProductFeatureVideo({ fallbackImage, videoSrc, name }: { fallbackImage:
       mediaClassName="relative h-full min-h-[340px] w-full rounded-[inherit] object-cover sm:min-h-[420px] lg:min-h-[520px]"
       imageClassName="object-contain p-8 sm:p-12 lg:p-16"
       sizes="(min-width: 1024px) 50vw, 100vw"
-      preload="metadata"
+      preload="none"
+      lazyVideo
       disableVideoOnMobile
     />
   );

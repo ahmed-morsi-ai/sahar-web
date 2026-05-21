@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import { PRODUCT_IMAGE_PLACEHOLDER, resolveProductImage } from "@/lib/media-utils";
+import { useEffect, useMemo, useState } from "react";
+import { resolveImageCandidates, resolveProductImage } from "@/lib/media-utils";
 
 export function ProductImagePreview({
   src,
@@ -14,11 +14,14 @@ export function ProductImagePreview({
   className?: string;
 }) {
   const imageSrc = resolveProductImage(src);
-  const [activeSrc, setActiveSrc] = useState(imageSrc);
+  const candidates = useMemo(() => resolveImageCandidates(imageSrc), [imageSrc]);
+  const candidatesKey = candidates.join("|");
+  const [activeIndex, setActiveIndex] = useState(0);
+  const activeSrc = candidates[activeIndex] ?? imageSrc;
 
   useEffect(() => {
-    setActiveSrc(imageSrc);
-  }, [imageSrc]);
+    setActiveIndex(0);
+  }, [candidatesKey]);
 
   return (
     <div className={`relative shrink-0 overflow-hidden rounded-2xl border border-gold/15 bg-luxury-radial ${className}`}>
@@ -29,9 +32,7 @@ export function ProductImagePreview({
         sizes="96px"
         className="object-contain p-2"
         onError={() => {
-          if (activeSrc !== PRODUCT_IMAGE_PLACEHOLDER) {
-            setActiveSrc(PRODUCT_IMAGE_PLACEHOLDER);
-          }
+          setActiveIndex((current) => (current + 1 < candidates.length ? current + 1 : current));
         }}
       />
     </div>

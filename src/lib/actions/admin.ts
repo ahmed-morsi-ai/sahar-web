@@ -1,9 +1,11 @@
 import { prisma } from "@/lib/prisma";
+import { safePrismaRead } from "@/services/db/safe-query";
 import type { OrderStatusValue, PaymentMethodValue } from "@/types/order";
 
 const revenueStatuses: OrderStatusValue[] = ["CONFIRMED", "DELIVERED"];
 
 export async function getDashboardStats() {
+  return safePrismaRead(async () => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -60,16 +62,34 @@ export async function getDashboardStats() {
     todayNetProfit,
     averageOrderValue: revenueOrders.length ? Math.round(totalRevenue / revenueOrders.length) : 0
   };
+  }, {
+    totalOrders: 0,
+    pendingOrders: 0,
+    confirmedOrders: 0,
+    deliveredOrders: 0,
+    cancelledOrders: 0,
+    totalRevenue: 0,
+    totalProductCost: 0,
+    netProfit: 0,
+    profitMargin: 0,
+    todayRevenue: 0,
+    todayNetProfit: 0,
+    averageOrderValue: 0
+  });
 }
 
 export async function getRecentOrders(limit = 8) {
-  return prisma.order.findMany({
-    orderBy: { createdAt: "desc" },
-    take: limit,
-    include: {
-      items: true
-    }
-  });
+  return safePrismaRead(
+    () =>
+      prisma.order.findMany({
+        orderBy: { createdAt: "desc" },
+        take: limit,
+        include: {
+          items: true
+        }
+      }),
+    []
+  );
 }
 
 export async function getOrders({

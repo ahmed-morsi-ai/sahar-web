@@ -26,6 +26,10 @@ export function ProductDetailClient({ product, related }: { product: Product; re
   const [size, setSize] = useState(product.sizes[0]?.label ?? "50ml");
   const [quantity, setQuantity] = useState(1);
 
+  useEffect(() => {
+    setActiveMedia(productImage);
+  }, [product.slug, productImage]);
+
   const selectedPrice = product.price + (product.sizes.find((item) => item.label === size)?.priceModifier ?? 0);
   const isActiveVideo = Boolean(detailVideo && activeMedia === detailVideo);
 
@@ -69,6 +73,7 @@ export function ProductDetailClient({ product, related }: { product: Product; re
           <div>
             <div className="relative aspect-square overflow-hidden rounded-[1.4rem] border border-gold/15 bg-luxury-radial shadow-gold sm:rounded-[2rem] sm:shadow-glow">
               <MediaRenderer
+                key={`${product.slug}:${activeMedia}`}
                 src={activeMedia}
                 fallbackSrc={activeMedia === detailVideo ? productImage : undefined}
                 alt={product.name}
@@ -77,8 +82,10 @@ export function ProductDetailClient({ product, related }: { product: Product; re
                 mediaClassName="h-full w-full object-cover"
                 imageClassName="object-contain p-8 sm:p-16"
                 priority
+                lazyVideo={false}
                 preload="metadata"
                 controlsOnMobile
+                allowMobileAutoPlay={false}
               />
             </div>
             <div className="mt-4 flex gap-3 overflow-x-auto pb-1">

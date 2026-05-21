@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
+import { isRecoverablePrismaReadError } from "@/lib/prisma-errors";
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -23,7 +24,10 @@ export const authOptions: NextAuthOptions = {
 
         if (!email || !password) return null;
 
-        const user = await prisma.user.findUnique({ where: { email } });
+        const user = await prisma.user.findUnique({ where: { email } }).catch((error: unknown) => {
+          if (isRecoverablePrismaReadError(error)) return null;
+          throw error;
+        });
         if (!user || user.role !== "ADMIN") return null;
 
         const isValid = await bcrypt.compare(password, user.passwordHash);

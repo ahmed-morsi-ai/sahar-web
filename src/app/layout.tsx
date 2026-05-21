@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Providers } from "./providers";
-import { AnalyticsTracker } from "@/components/analytics/AnalyticsTracker";
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
+import { cormorant, inter } from "@/lib/fonts";
 
 export const metadata: Metadata = {
   title: "Sahar | Essence of Night",
@@ -13,16 +10,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body className="font-sans antialiased">
-        <Providers>
-          <AnalyticsTracker>
-            <Navbar />
-            <main className="overflow-x-hidden">{children}</main>
-            <Footer />
-          </AnalyticsTracker>
-        </Providers>
-      </body>
+    <html lang="en" className={`${cormorant.variable} ${inter.variable}`}>
+      <body className="font-sans antialiased">{children}</body>
     </html>
   );
 }

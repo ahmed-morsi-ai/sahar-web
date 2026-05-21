@@ -33,6 +33,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    if (process.env.VERCEL) {
+      return NextResponse.json(
+        { error: "Product image uploads need persistent object storage in production." },
+        { status: 501 }
+      );
+    }
+
     const formData = await request.formData();
     const file = formData.get("file");
 
@@ -55,9 +62,6 @@ export async function POST(request: Request) {
     const destination = path.join(uploadDir, fileName);
     const bytes = Buffer.from(await file.arrayBuffer());
 
-    // Local uploads are convenient for development. On Vercel/serverless,
-    // uploaded files are not persistent; move this to Supabase Storage,
-    // Cloudinary, or similar object storage before production.
     await mkdir(uploadDir, { recursive: true });
     await writeFile(destination, bytes);
 

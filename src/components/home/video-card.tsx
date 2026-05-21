@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Play } from "lucide-react";
 import { useInViewport } from "@/lib/use-in-viewport";
-import { useMediaQuery, usePrefersReducedMotion } from "@/lib/use-media-query";
+import { useIsMobile, usePrefersReducedMotion } from "@/lib/use-media-query";
 
 const VIDEO_CARD_PLAY_EVENT = "sahar:campaign-video-play";
 
@@ -13,12 +13,18 @@ export function VideoCard({ title, src }: { title: string; src?: string }) {
   const cardRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const id = useId();
-  const isMobile = useMediaQuery("(max-width: 640px)");
+  const isMobile = useIsMobile();
   const prefersReducedMotion = usePrefersReducedMotion();
   const isInView = useInViewport(cardRef, "120px", 0.45);
-  const showVideo = Boolean(src && !videoFailed);
-  const canPlay = showVideo && !prefersReducedMotion && (!isMobile || (isInView && !userPaused));
-  const shouldRenderVideo = showVideo && (!isMobile || isInView);
+  const showVideo = Boolean(src && !videoFailed && !prefersReducedMotion);
+  const shouldRenderVideo = showVideo && isInView;
+  const canPlay = shouldRenderVideo && !userPaused;
+
+  useEffect(() => {
+    if (!isInView) {
+      setUserPaused(false);
+    }
+  }, [isInView]);
 
   useEffect(() => {
     if (!isMobile) return;
@@ -37,16 +43,19 @@ export function VideoCard({ title, src }: { title: string; src?: string }) {
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || !isMobile) return;
+    if (!video || !shouldRenderVideo) return;
 
     if (!canPlay) {
       video.pause();
       return;
     }
 
-    window.dispatchEvent(new CustomEvent(VIDEO_CARD_PLAY_EVENT, { detail: id }));
+    if (isMobile) {
+      window.dispatchEvent(new CustomEvent(VIDEO_CARD_PLAY_EVENT, { detail: id }));
+    }
+
     void video.play().catch(() => setUserPaused(true));
-  }, [canPlay, id, isMobile]);
+  }, [canPlay, id, isMobile, shouldRenderVideo]);
 
   return (
     <div
@@ -56,11 +65,11 @@ export function VideoCard({ title, src }: { title: string; src?: string }) {
       {shouldRenderVideo ? (
         <video
           ref={videoRef}
-          autoPlay={canPlay}
+          src={src}
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="none"
           className="absolute inset-0 h-full w-full object-cover opacity-80 sm:opacity-85"
           onError={() => setVideoFailed(true)}
           onPlay={() => {
@@ -71,9 +80,7 @@ export function VideoCard({ title, src }: { title: string; src?: string }) {
           onPause={() => {
             if (isMobile && isInView) setUserPaused(true);
           }}
-        >
-          <source src={src} type="video/mp4" onError={() => setVideoFailed(true)} />
-        </video>
+        />
       ) : (
         <div className="absolute inset-0">
           <div className="absolute inset-x-8 top-12 hidden h-44 rounded-full bg-emerald/15 blur-3xl sm:block" />
