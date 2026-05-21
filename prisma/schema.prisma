@@ -3,13 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("POSTGRES_PRISMA_URL")
-  directUrl = env("POSTGRES_URL_NON_POOLING")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 model User {
   id           String   @id @default(cuid())
-  name         String
+  name         String   @default("Sahar Admin")
   email        String   @unique
   passwordHash String
   role         String   @default("ADMIN")
@@ -51,7 +50,6 @@ model Product {
   isActive        Boolean     @default(true)
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
-
   orderItems      OrderItem[]
 }
 
@@ -72,7 +70,6 @@ model Order {
   whatsappMessage String?
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
-
   items           OrderItem[]
 
   @@index([createdAt])
@@ -95,7 +92,6 @@ model OrderItem {
   quantity     Int
   total        Int
   createdAt    DateTime @default(now())
-
   order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product      Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
 
@@ -113,7 +109,6 @@ model AnalyticsVisitor {
   city        String?
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
-
   sessions    AnalyticsSession[]
   events      AnalyticsEvent[]
 
@@ -137,7 +132,6 @@ model AnalyticsSession {
   landingPage     String?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
-
   visitor         AnalyticsVisitor @relation(fields: [visitorId], references: [visitorId], onDelete: Cascade)
   events          AnalyticsEvent[]
 
@@ -157,7 +151,6 @@ model AnalyticsEvent {
   productName String?
   metadata    Json?
   createdAt   DateTime         @default(now())
-
   visitor     AnalyticsVisitor @relation(fields: [visitorId], references: [visitorId], onDelete: Cascade)
   session     AnalyticsSession @relation(fields: [sessionId], references: [sessionId], onDelete: Cascade)
 
